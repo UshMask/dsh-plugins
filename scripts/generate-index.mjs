@@ -125,7 +125,6 @@ if (!repo || repo === 'REPO') fail('market.config.json: set github.repo to your 
 if (!config.title?.en) fail('market.config.json: title.en is required by the index format')
 
 const repoUrl = `https://github.com/${owner}/${repo}`
-const repoGitUrl = `${repoUrl}.git`
 const pagesUrl = `https://${String(owner).toLowerCase()}.github.io/${repo}/`
 const indexUrl = `${pagesUrl}index.json`
 
