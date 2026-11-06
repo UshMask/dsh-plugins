@@ -1,0 +1,62 @@
+{
+  "name": "dsh-context-guard",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Live context-window pressure plaque with configurable warning and auto-compaction thresholds",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "dsh-bundle",
+    "deepseek-harness",
+    "context-window",
+    "compaction",
+    "thresholds"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Max",
+    "url": "https://github.com/UshMask"
+  },
+  "homepage": "https://github.com/UshMask/dsh-plugins/tree/main/packages/dsh-context-guard",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UshMask/dsh-plugins.git",
+    "directory": "packages/dsh-context-guard"
+  },
+  "bugs": {
+    "url": "https://github.com/UshMask/dsh-plugins/issues"
+  },
+  "engines": {
+    "dsh": ">=0.2.2-rc.1 <0.3.0"
+  },
+  "main": "index.js",
+  "icon": "./icon.svg",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-chat"
+      ]
+    }
+  }
+}

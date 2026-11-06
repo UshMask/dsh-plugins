@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Token cost",
+    "description": "Replaces the token-usage text with a compact cost estimate and a plain-language explanation of cached input, uncached input, cache hit rate and output."
+  }
+}

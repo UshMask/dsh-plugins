@@ -1,0 +1,10 @@
+- insert:
+    - id: token-cost
+      name: 'dsh-token-cost'
+      config:
+        currency: RUB
+        symbol: ₽
+        currencyRate: 90
+        priceUncachedPerMillion: 0.15
+        priceCachedPerMillion: 0.003
+        priceOutputPerMillion: 0.6

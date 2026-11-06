@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Context guard",
+    "description": "A live context-window pressure bar under the composer with a configurable warning threshold and a configurable auto-compaction threshold."
+  }
+}

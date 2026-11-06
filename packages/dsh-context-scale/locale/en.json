@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Context scale",
+    "description": "A minimal context-window scale under the composer with two draggable thresholds: a warning mark and an auto-compaction mark."
+  }
+}

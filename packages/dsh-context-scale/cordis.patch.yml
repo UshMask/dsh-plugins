@@ -1,0 +1,7 @@
+- insert:
+    - id: context-scale
+      name: 'dsh-context-scale'
+      config:
+        warnPct: 55
+        compactPct: 80
+        autoCompact: true

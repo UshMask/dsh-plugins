@@ -1,0 +1,61 @@
+{
+  "name": "dsh-context-scale",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Minimal context-pressure scale under the composer with two draggable thresholds",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "dsh-bundle",
+    "deepseek-harness",
+    "context-window",
+    "compaction"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Max",
+    "url": "https://github.com/UshMask"
+  },
+  "homepage": "https://github.com/UshMask/dsh-plugins/tree/main/packages/dsh-context-scale",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UshMask/dsh-plugins.git",
+    "directory": "packages/dsh-context-scale"
+  },
+  "bugs": {
+    "url": "https://github.com/UshMask/dsh-plugins/issues"
+  },
+  "engines": {
+    "dsh": ">=0.2.2-rc.1 <0.3.0"
+  },
+  "main": "index.js",
+  "icon": "./icon.svg",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale",
+    "icon.svg",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-chat"
+      ]
+    }
+  }
+}

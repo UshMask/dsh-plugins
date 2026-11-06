@@ -1,0 +1,47 @@
+{
+  "title": {
+    "en": "Max's DSH plugins",
+    "ru": "Плагины Max для DSH"
+  },
+  "description": {
+    "en": "Context-window meters and token-cost views for the DeepSeek Harness Web UI.",
+    "ru": "Индикаторы заполнения контекста и стоимости токенов для Web UI DeepSeek Harness."
+  },
+  "author": "Max",
+  "authorUrl": "https://github.com/UshMask",
+  "github": {
+    "owner": "UshMask",
+    "repo": "dsh-plugins",
+    "branch": "main"
+  },
+  "source": "git",
+  "enginesDsh": ">=0.2.2-rc.1 <0.3.0",
+  "categories": {
+    "ui": {
+      "title": {
+        "en": "Interface",
+        "ru": "Интерфейс"
+      }
+    },
+    "usage": {
+      "title": {
+        "en": "Usage & cost",
+        "ru": "Расход и стоимость"
+      }
+    }
+  },
+  "plugins": {
+    "dsh-context-scale": {
+      "category": "ui",
+      "keywords": ["context window", "compaction", "composer"]
+    },
+    "dsh-token-cost": {
+      "category": "usage",
+      "keywords": ["tokens", "cost", "usage", "currency"]
+    },
+    "dsh-context-guard": {
+      "category": "ui",
+      "keywords": ["context window", "compaction", "thresholds"]
+    }
+  }
+}

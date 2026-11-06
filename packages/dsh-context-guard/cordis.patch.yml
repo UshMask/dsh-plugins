@@ -1,0 +1,7 @@
+- insert:
+    - id: context-guard
+      name: 'dsh-context-guard'
+      config:
+        warnPct: 55
+        compactPct: 80
+        autoCompact: true
