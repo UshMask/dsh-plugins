@@ -19,6 +19,7 @@
 import { execFileSync } from 'node:child_process'
 import fs from 'node:fs'
 import path from 'node:path'
+import zlib from 'node:zlib'
 import { fileURLToPath } from 'node:url'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
@@ -41,6 +42,65 @@ function git(args, { allowFailure = false } = {}) {
     if (allowFailure) return ''
     throw error
   }
+}
+
+// The sandboxed Desktop runtime denies piped child processes (EPERM), so the
+// git CLI is not always reachable from here. Fall back to reading .git
+// directly: the HEAD commit and its committer time are enough to pin an index.
+// The per-package history and the uncommitted-changes check are unavailable.
+function readGitHeadFallback() {
+  const gitDir = path.join(root, '.git')
+  try {
+    if (!fs.statSync(gitDir).isDirectory()) return null
+  } catch {
+    return null
+  }
+  let head
+  try {
+    head = fs.readFileSync(path.join(gitDir, 'HEAD'), 'utf8').trim()
+  } catch {
+    return null
+  }
+  let commit = head
+  if (head.startsWith('ref: ')) {
+    const ref = head.slice(5).trim()
+    const refFile = path.join(gitDir, ref)
+    if (exists(refFile)) {
+      commit = fs.readFileSync(refFile, 'utf8').trim()
+    } else if (exists(path.join(gitDir, 'packed-refs'))) {
+      const packed = fs.readFileSync(path.join(gitDir, 'packed-refs'), 'utf8')
+      const line = packed.split(/\r?\n/).find((row) => row.endsWith(` ${ref}`))
+      if (line) commit = line.split(' ')[0]
+    }
+  }
+  if (!/^[0-9a-f]{40}$/.test(commit)) return null
+  const objectFile = path.join(gitDir, 'objects', commit.slice(0, 2), commit.slice(2))
+  let timestamp
+  try {
+    const object = zlib.inflateSync(fs.readFileSync(objectFile)).toString('utf8')
+    const match = object.match(/^committer .* (\d+) [+-]\d{4}$/m)
+    if (match) timestamp = Number(match[1])
+  } catch {
+    // A packed object has no loose file; the timestamp stays unknown.
+  }
+  return { commit, timestamp }
+}
+
+let gitCli = false
+try {
+  gitCli = git(['rev-parse', '--is-inside-work-tree']) === 'true'
+} catch {
+  gitCli = false
+}
+const gitFallback = gitCli ? null : readGitHeadFallback()
+const isGitRepo = gitCli || Boolean(gitFallback)
+if (!isGitRepo) {
+  fail('not a git repository: run git init, commit the packages, then regenerate')
+}
+if (gitFallback) {
+  warn(
+    'git CLI is unavailable (sandboxed runtime): the index is pinned to HEAD and uncommitted package changes are not detected — commit before pushing',
+  )
 }
 
 function printProblems() {
@@ -68,8 +128,6 @@ const repoUrl = `https://github.com/${owner}/${repo}`
 const repoGitUrl = `${repoUrl}.git`
 const pagesUrl = `https://${String(owner).toLowerCase()}.github.io/${repo}/`
 const indexUrl = `${pagesUrl}index.json`
-const isGitRepo = git(['rev-parse', '--is-inside-work-tree'], { allowFailure: true }) === 'true'
-if (!isGitRepo) fail('not a git repository: run git init, commit the packages, then regenerate')
 
 // LocalizedText helper: strings are allowed, but we always emit { en, ... }.
 function localizedText(en, ru) {
@@ -154,7 +212,7 @@ for (const directoryName of orderedDirectories) {
   if (!enginesDsh) {
     fail(`${relativeDir}: package.json needs "engines": { "dsh": "..." } — the market requires it`)
   } else {
-    if (!/\d/.test(enginesDsh) || !/^[\d\s<>=~^*|.xX+-]+$/.test(enginesDsh)) {
+    if (!/\d/.test(enginesDsh) || !/^[\dA-Za-z\s<>=~^*|.+-]+$/.test(enginesDsh)) {
       fail(`${relativeDir}: engines.dsh "${enginesDsh}" is not a valid SemVer range`)
     }
     if (config.enginesDsh && enginesDsh !== config.enginesDsh) {
@@ -214,7 +272,7 @@ for (const directoryName of orderedDirectories) {
   // Source pin and publish time.
   let commit
   let publishTimestamp
-  if (isGitRepo) {
+  if (gitCli) {
     const dirty = git(['status', '--porcelain', '--', relativeDir], { allowFailure: true })
     if (dirty) {
       const message = `${relativeDir}: uncommitted changes — commit them so the index can pin a real commit`
@@ -230,6 +288,12 @@ for (const directoryName of orderedDirectories) {
       fail(`${relativeDir}: cannot read the commit time`)
     } else {
       publishTimestamp = commitTime
+    }
+  } else if (gitFallback) {
+    commit = gitFallback.commit
+    publishTimestamp = gitFallback.timestamp
+    if (!/^[0-9a-f]{40}$/.test(commit)) {
+      fail(`${relativeDir}: cannot resolve the HEAD commit`)
     }
   }
 

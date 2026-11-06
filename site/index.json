@@ -1,0 +1,153 @@
+{
+  "format": 1,
+  "title": {
+    "en": "Max's DSH plugins",
+    "ru": "Плагины Max для DSH"
+  },
+  "description": {
+    "en": "Context-window meters and token-cost views for the DeepSeek Harness Web UI.",
+    "ru": "Индикаторы заполнения контекста и стоимости токенов для Web UI DeepSeek Harness."
+  },
+  "metadata": {
+    "categories": {
+      "ui": {
+        "title": {
+          "en": "Interface",
+          "ru": "Интерфейс"
+        }
+      },
+      "usage": {
+        "title": {
+          "en": "Usage & cost",
+          "ru": "Расход и стоимость"
+        }
+      }
+    }
+  },
+  "plugins": [
+    {
+      "name": "dsh-context-scale",
+      "title": {
+        "en": "Context scale",
+        "ru": "Шкала контекста"
+      },
+      "description": {
+        "en": "A minimal context-window scale under the composer with two draggable thresholds: a warning mark and an auto-compaction mark.",
+        "ru": "Минимальная шкала заполнения контекста под полем ввода с двумя перетаскиваемыми метками: порог предупреждения и порог автосжатия."
+      },
+      "icon": "icons/dsh-context-scale.svg",
+      "author": "Max",
+      "homepage": "https://github.com/UshMask/dsh-plugins/tree/main/packages/dsh-context-scale",
+      "repository": {
+        "url": "https://github.com/UshMask/dsh-plugins",
+        "directory": "packages/dsh-context-scale"
+      },
+      "metadata": {
+        "category": "ui",
+        "keywords": [
+          "context window",
+          "compaction",
+          "composer"
+        ]
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "publishTimestamp": 1793923922,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/UshMask/dsh-plugins",
+            "commit": "fb07d66351b6b265bed02e018c6d25952b1b4b87",
+            "path": "packages/dsh-context-scale"
+          },
+          "engines": {
+            "dsh": ">=0.2.2-rc.1 <0.3.0"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dsh-token-cost",
+      "title": {
+        "en": "Token cost",
+        "ru": "Стоимость токенов"
+      },
+      "description": {
+        "en": "Replaces the token-usage text with a compact cost estimate and a plain-language explanation of cached input, uncached input, cache hit rate and output.",
+        "ru": "Заменяет текст о расходе токенов компактной оценкой стоимости и объясняет простыми словами, что значат кэшированный ввод, некэшированный ввод, попадание в кэш и выход."
+      },
+      "icon": "icons/dsh-token-cost.svg",
+      "author": "Max",
+      "homepage": "https://github.com/UshMask/dsh-plugins/tree/main/packages/dsh-token-cost",
+      "repository": {
+        "url": "https://github.com/UshMask/dsh-plugins",
+        "directory": "packages/dsh-token-cost"
+      },
+      "metadata": {
+        "category": "usage",
+        "keywords": [
+          "tokens",
+          "cost",
+          "usage",
+          "currency"
+        ]
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "publishTimestamp": 1793923922,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/UshMask/dsh-plugins",
+            "commit": "fb07d66351b6b265bed02e018c6d25952b1b4b87",
+            "path": "packages/dsh-token-cost"
+          },
+          "engines": {
+            "dsh": ">=0.2.2-rc.1 <0.3.0"
+          }
+        }
+      ]
+    },
+    {
+      "name": "dsh-context-guard",
+      "title": {
+        "en": "Context guard",
+        "ru": "Контроль контекста"
+      },
+      "description": {
+        "en": "A live context-window pressure bar under the composer with a configurable warning threshold and a configurable auto-compaction threshold.",
+        "ru": "Живая шкала заполнения контекстного окна под полем ввода: настраиваемый порог предупреждения и настраиваемый порог автосжатия истории."
+      },
+      "icon": "icons/dsh-context-guard.svg",
+      "author": "Max",
+      "homepage": "https://github.com/UshMask/dsh-plugins/tree/main/packages/dsh-context-guard",
+      "repository": {
+        "url": "https://github.com/UshMask/dsh-plugins",
+        "directory": "packages/dsh-context-guard"
+      },
+      "metadata": {
+        "category": "ui",
+        "keywords": [
+          "context window",
+          "compaction",
+          "thresholds"
+        ]
+      },
+      "versions": [
+        {
+          "version": "1.0.0",
+          "publishTimestamp": 1793923922,
+          "source": {
+            "type": "git",
+            "url": "https://github.com/UshMask/dsh-plugins",
+            "commit": "fb07d66351b6b265bed02e018c6d25952b1b4b87",
+            "path": "packages/dsh-context-guard"
+          },
+          "engines": {
+            "dsh": ">=0.2.2-rc.1 <0.3.0"
+          }
+        }
+      ]
+    }
+  ]
+}

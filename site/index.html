@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Плагины Max для DSH</title>
+<style>
+  :root { color-scheme: dark; --bg:#14161a; --card:#1c1f26; --line:#2a2f3a; --text:#e6e8ee; --muted:#9aa3b2; --accent:#7aa2ff; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:48px 20px 72px; background:var(--bg); color:var(--text); font:16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 28px; margin: 0 0 8px; }
+  .lead { color: var(--muted); margin: 0 0 28px; }
+  .howto { background: var(--card); border:1px solid var(--line); border-radius:12px; padding:16px 20px; margin: 0 0 28px; }
+  .howto ol { margin: 8px 0 0; padding-left: 20px; }
+  .howto code { word-break: break-all; }
+  .card { display:flex; gap:16px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px; margin: 0 0 14px; }
+  .icon { width:44px; height:44px; flex:0 0 44px; border-radius:10px; object-fit:contain; background:#0f1115; }
+  .icon-placeholder { background:#242833; }
+  .body { min-width: 0; }
+  h2 { font-size: 18px; margin: 0 0 6px; }
+  .alt { color: var(--muted); font-size: 13px; font-weight: 400; }
+  .body p { margin: 0 0 6px; color: var(--muted); }
+  .meta { font-size: 13px; }
+  code { font: 12.5px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--text); background:#0f1115; border:1px solid var(--line); border-radius:6px; padding:1px 5px; }
+  footer { margin-top: 32px; color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Плагины Max для DSH</h1>
+  <p class="lead">Индикаторы заполнения контекста и стоимости токенов для Web UI DeepSeek Harness.</p>
+  <section class="howto">
+    <strong>Как поставить плагины</strong>
+    <ol>
+      <li>В DSH включите экспериментальный бандл <em>Custom plugin market</em> (Plugins → More рядом с «Experimental plugins»).</li>
+      <li>Plugins → <em>Discover</em> → <em>Add index source</em> и вставьте <code>https://ushmask.github.io/dsh-plugins/index.json</code>.</li>
+      <li>Выберите плагин и нажмите <em>Install</em> — DSH покажет версию, источник и коммит.</li>
+    </ol>
+    <p>Командная строка для ручной установки: <code>dsh plugin --profile &lt;profile&gt; add &lt;spec&gt;</code>, spec указан в карточке.</p>
+  </section>
+      <article class="card">
+        <img class="icon" src="icons/dsh-context-scale.svg" alt="" loading="lazy">
+        <div class="body">
+          <h2>Шкала контекста <span class="alt">Context scale</span></h2>
+          <p>Минимальная шкала заполнения контекста под полем ввода с двумя перетаскиваемыми метками: порог предупреждения и порог автосжатия.</p>
+          <p class="meta"><code>dsh-context-scale</code> · 1.0.0 · dsh &gt;=0.2.2-rc.1 &lt;0.3.0</p>
+          <p class="meta">Установка: <code>git+https://github.com/UshMask/dsh-plugins.git#fb07d66351b6b265bed02e018c6d25952b1b4b87&amp;path:/packages/dsh-context-scale</code></p>
+        </div>
+      </article>
+      <article class="card">
+        <img class="icon" src="icons/dsh-token-cost.svg" alt="" loading="lazy">
+        <div class="body">
+          <h2>Стоимость токенов <span class="alt">Token cost</span></h2>
+          <p>Заменяет текст о расходе токенов компактной оценкой стоимости и объясняет простыми словами, что значат кэшированный ввод, некэшированный ввод, попадание в кэш и выход.</p>
+          <p class="meta"><code>dsh-token-cost</code> · 1.0.0 · dsh &gt;=0.2.2-rc.1 &lt;0.3.0</p>
+          <p class="meta">Установка: <code>git+https://github.com/UshMask/dsh-plugins.git#fb07d66351b6b265bed02e018c6d25952b1b4b87&amp;path:/packages/dsh-token-cost</code></p>
+        </div>
+      </article>
+      <article class="card">
+        <img class="icon" src="icons/dsh-context-guard.svg" alt="" loading="lazy">
+        <div class="body">
+          <h2>Контроль контекста <span class="alt">Context guard</span></h2>
+          <p>Живая шкала заполнения контекстного окна под полем ввода: настраиваемый порог предупреждения и настраиваемый порог автосжатия истории.</p>
+          <p class="meta"><code>dsh-context-guard</code> · 1.0.0 · dsh &gt;=0.2.2-rc.1 &lt;0.3.0</p>
+          <p class="meta">Установка: <code>git+https://github.com/UshMask/dsh-plugins.git#fb07d66351b6b265bed02e018c6d25952b1b4b87&amp;path:/packages/dsh-context-guard</code></p>
+        </div>
+      </article>
+  <footer>Индекс: <a href="index.json">index.json</a> · исходники: <a href="https://github.com/UshMask/dsh-plugins">https://github.com/UshMask/dsh-plugins</a></footer>
+</main>
+</body>
+</html>
