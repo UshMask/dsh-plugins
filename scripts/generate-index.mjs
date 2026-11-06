@@ -32,7 +32,7 @@ const warnings = []
 const fail = (message) => errors.push(message)
 const warn = (message) => warnings.push(message)
 
-const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8'))
+const readJson = (file) => JSON.parse(fs.readFileSync(file, 'utf8').replace(/^\uFEFF/, ''))
 const exists = (file) => fs.existsSync(file)
 
 function git(args, { allowFailure = false } = {}) {
@@ -240,8 +240,37 @@ for (const directoryName of orderedDirectories) {
       fail(`${relativeDir}: declares dsh.client but exports["./client"] is missing`)
     } else if (!exists(path.join(packageDir, clientEntry))) {
       fail(`${relativeDir}: exports["./client"] points at missing file ${clientEntry}`)
+    } else {
+      const bundleText = fs.readFileSync(path.join(packageDir, clientEntry), 'utf8')
+      const moduleId = bundleText.match(/__ModuleLoader__\.load\(\{\s*id:\s*['"]([^'"]+)['"]/)?.[1]
+      if (!moduleId) {
+        warn(`${relativeDir}: cannot find the client module id in ${clientEntry}`)
+      } else if (moduleId !== name) {
+        fail(`${relativeDir}: client module id "${moduleId}" must equal the package name "${name}"`)
+      }
     }
   }
+
+  // The bundle is installed from this repository, so its metadata must say so.
+  const repositoryUrl = typeof manifest.repository === 'string' ? manifest.repository : manifest.repository?.url
+  if (!repositoryUrl) {
+    warn(`${relativeDir}: package.json has no repository — set repository.url to ${repoUrl}`)
+  } else {
+    const normalizedRepository = String(repositoryUrl)
+      .replace(/^git\+/, '')
+      .replace(/\.git$/, '')
+      .replace(/\/$/, '')
+    if (normalizedRepository !== repoUrl) {
+      warn(`${relativeDir}: repository.url points at ${normalizedRepository}, expected ${repoUrl}`)
+    }
+    if (manifest.repository.directory && manifest.repository.directory !== relativeDir) {
+      warn(`${relativeDir}: repository.directory is "${manifest.repository.directory}", expected "${relativeDir}"`)
+    }
+  }
+
+  const settings = config.plugins?.[name] ?? {}
+  const manifestAuthor = typeof manifest.author === 'string' ? manifest.author : manifest.author?.name
+  const author = settings.author ?? manifestAuthor ?? config.author
 
   // Icon: inline or relative to the index. Keep the file next to the index.
   const iconDeclaration = manifest.icon ?? './icon.svg'
@@ -315,7 +344,6 @@ for (const directoryName of orderedDirectories) {
     }
   }
 
-  const settings = config.plugins?.[name] ?? {}
   const metadata = {}
   if (settings.category) metadata.category = settings.category
   if (Array.isArray(settings.keywords) && settings.keywords.length) metadata.keywords = settings.keywords
@@ -326,7 +354,7 @@ for (const directoryName of orderedDirectories) {
     ...(title ? { title } : {}),
     ...(description ? { description } : {}),
     ...(iconReference ? { icon: iconReference } : {}),
-    ...(config.author ? { author: config.author } : {}),
+    ...(author ? { author } : {}),
     homepage: `${repoUrl}/tree/${branch}/${relativeDir}`,
     repository: { url: repoUrl, directory: relativeDir },
     ...(Object.keys(metadata).length ? { metadata } : {}),
@@ -340,6 +368,63 @@ for (const directoryName of orderedDirectories) {
     ],
   }
   plugins.push(plugin)
+}
+
+// ------------------------------------------- external plugins (optional) ---
+// Plugins that live in other repositories or on npm can be listed here without
+// giving their authors write access to this repository. They are declared by
+// hand in market.external.json and validated like local packages.
+const externalFile = path.join(root, 'market.external.json')
+if (exists(externalFile)) {
+  let external
+  try {
+    external = readJson(externalFile)
+  } catch (error) {
+    fail(`market.external.json: ${error.message}`)
+  }
+  if (external && !Array.isArray(external.plugins)) {
+    fail('market.external.json: "plugins" must be an array')
+  }
+  for (const entry of Array.isArray(external?.plugins) ? external.plugins : []) {
+    if (!entry || typeof entry.name !== 'string' || !entry.name.trim()) {
+      fail('market.external.json: every entry needs a name')
+      continue
+    }
+    if (seenNames.has(entry.name)) {
+      fail(`market.external.json: duplicate plugin name ${entry.name}`)
+      continue
+    }
+    seenNames.add(entry.name)
+
+    const entryTitleEn = typeof entry.title === 'string' ? entry.title : entry.title?.en
+    if (!entryTitleEn) fail(`market.external.json: ${entry.name} needs title.en so the card has a name`)
+    if (entry.icon && !/^(https:\/\/|data:image\/)/.test(String(entry.icon))) {
+      fail(`market.external.json: ${entry.name} icon must be an https: URL or a data:image URL`)
+    }
+    if (!Array.isArray(entry.versions) || entry.versions.length === 0) {
+      fail(`market.external.json: ${entry.name} needs a non-empty versions array`)
+      continue
+    }
+    for (const version of entry.versions) {
+      const label = `${entry.name}@${version?.version ?? '?'}`
+      if (typeof version?.version !== 'string' || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version.version)) {
+        fail(`market.external.json: ${entry.name} has an invalid version entry`)
+      }
+      if (!Number.isInteger(version?.publishTimestamp) || version.publishTimestamp < 0) {
+        fail(`market.external.json: ${label} needs an integer publishTimestamp (Unix seconds)`)
+      }
+      if (!version?.engines?.dsh) fail(`market.external.json: ${label} needs engines.dsh`)
+      const source = version?.source
+      if (source?.type === 'git') {
+        if (!/^[0-9a-f]{40}$/.test(source.commit ?? '')) fail(`market.external.json: ${label} has an invalid git commit`)
+        if (!String(source.url ?? '').startsWith('https://')) fail(`market.external.json: ${label} git url must be https`)
+        if (!source.path) fail(`market.external.json: ${label} git source needs a path`)
+      } else if (source?.type !== 'npm') {
+        fail(`market.external.json: ${label} has an unsupported source type`)
+      }
+    }
+    plugins.push(entry)
+  }
 }
 
 // ---------------------------------------------------------------- index ---
