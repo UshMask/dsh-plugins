@@ -29,13 +29,21 @@ dsh-plugin-market/
 
 Репозиторий уже инициализирован и закоммичен (`main`). Папка живёт внутри проекта
 `Znachki`, но это отдельный git-репозиторий — при желании перенесите её куда угодно.
+Чтобы случайно не закоммитить её во внешний проект, добавьте `dsh-plugin-market/`
+в `.gitignore` проекта `Znachki`.
 
 ## Выкладываем за 3 шага
 
-### 1. Создать репозиторий на GitHub и запушить
+### 1. Создать репозиторий и включить Pages
 
-Создайте на GitHub публичный репозиторий **`UshMask/dsh-plugins`** (имя и владелец
-заданы в `market.config.json` и в `package.json` пакетов) и выполните:
+1. Создайте на GitHub **публичный** репозиторий `UshMask/dsh-plugins` — пустой, без README.
+2. Сразу включите Pages: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+   Это лучше сделать до первого пуша, чтобы первый же прогон workflow задеплоил сайт.
+
+Репозиторий должен быть публичным: DSH ставит плагины из git, а приватный репозиторий
+друзья без ваших ключей не прочитают.
+
+### 2. Запушить
 
 ```powershell
 cd C:\Users\Max\Documents\Progi\Znachki\dsh-plugin-market
@@ -43,16 +51,13 @@ git remote add origin https://github.com/UshMask/dsh-plugins.git
 git push -u origin main
 ```
 
-Репозиторий должен быть **публичным**: DSH ставит плагины из git, а приватный репозиторий
-друзья без ваших ключей не прочитают.
+Workflow `.github/workflows/pages.yml` при каждом пуше в `main` проверяет индекс,
+генерирует `site/index.json` и деплоит папку `site`. Первый деплой занимает минуту-другую;
+прогресс виден во вкладке **Actions**. Если первый прогон упал на шаге deploy из-за
+невключённых Pages — включите их и нажмите **Re-run all jobs**.
 
-### 2. Включить GitHub Pages
-
-В репозитории: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-Больше ничего настраивать не нужно — workflow `.github/workflows/pages.yml` при каждом
-пуше в `main` проверяет индекс, генерирует `site/index.json` и деплоит папку `site`.
-
-Первый деплой занимает минуту-другую; прогресс виден во вкладке **Actions**.
+Если репозиторий называется иначе, поправьте `github` в `market.config.json` и поля
+`repository`/`homepage`/`bugs` в трёх `package.json`, затем пересоберите индекс и закоммитьте.
 
 ### 3. Проверить, что индекс отдаётся
 
@@ -111,6 +116,17 @@ python -m http.server 8000 --directory site
 ```powershell
 npm pack --dry-run --cache .\tmp\npm-cache   (в папке пакета)
 ```
+
+Проверить установку до публикации — в отдельном тестовом профиле DSH:
+
+```powershell
+dsh plugin --profile market-test add .\packages\dsh-context-scale
+dsh --profile market-test --dump-config   # должен появиться слой # == dsh-context-scale
+```
+
+Профиль `market-test` создастся автоматически; после проверки его можно удалить
+(каталог `C:\Users\Max\.dsh\profiles\market-test`). Внешний вид плагина проверяйте
+в своём рабочем профиле, включив бандл вручную.
 
 ## Как менять имена и репозиторий
 
